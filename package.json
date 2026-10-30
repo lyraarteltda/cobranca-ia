@@ -1,0 +1,7 @@
+{
+  "name": "cobranca-ia",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Régua de cobrança com Pix em lote: Pix copia-e-cola (BR Code) + QR por cliente, mensagens da IA (BYOK) por estágio, links do WhatsApp e controle mensal",
+  "license": "UNLICENSED"
+}

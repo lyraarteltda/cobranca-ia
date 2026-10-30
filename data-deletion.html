@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Excluir meus dados — Cobrança IA · Maestros da IA</title>
+  <meta name="description" content="Peça a exclusão dos seus dados pessoais (LGPD).">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%23f6eccb'/%3E%3Cpath d='M11 4v24' stroke='%231d2433' stroke-width='1.6' stroke-dasharray='2 2.4'/%3E%3Crect x='15' y='9' width='12' height='12' fill='none' stroke='%231d2433' stroke-width='2'/%3E%3Crect x='18' y='12' width='6' height='6' fill='%23c2412d'/%3E%3C/svg%3E">
+</head>
+<body>
+  <div class="doc-wrap">
+    <div class="doc-top">
+      <a class="doc-brand" href="index.html"><svg width="34" height="34" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="5" fill="#f6eccb"/><path d="M11 4v24" stroke="#1d2433" stroke-width="1.6" stroke-dasharray="2 2.4"/><rect x="15" y="9" width="12" height="12" fill="none" stroke="#1d2433" stroke-width="2"/><rect x="18" y="12" width="6" height="6" fill="#c2412d"/></svg>Cobrança IA</a>
+      <a class="doc-back" href="index.html">Voltar para a ferramenta</a>
+    </div>
+    <main class="doc">
+      <div class="card-body">
+        <p class="doc-kicker">Direito garantido pela LGPD</p>
+        <h1>Solicitar exclusão de dados</h1>
+        <p class="lead">Você pode pedir a exclusão dos seus dados pessoais a qualquer momento.</p>
+        <p>As cobranças, os dados dos seus clientes, a sua chave Pix, a régua e a sua chave de IA ficam só no seu navegador — para apagá-los, use <strong>Apagar dados deste navegador</strong> no rodapé da ferramenta. O pedido abaixo trata dos dados de membro que ficam com a comunidade.</p>
+
+        <form id="deletion-form" class="doc-form" novalidate>
+          <div class="form-group">
+            <label for="del-email">Seu e-mail cadastrado</label>
+            <input type="email" id="del-email" placeholder="seu@email.com" autocomplete="email" inputmode="email" required>
+          </div>
+          <div class="form-group">
+            <label for="del-phone">Seu WhatsApp <span class="hint">(opcional)</span></label>
+            <input type="tel" id="del-phone" placeholder="11999999999" autocomplete="tel" inputmode="tel">
+          </div>
+          <div class="form-group">
+            <label for="del-reason">Motivo <span class="hint">(opcional)</span></label>
+            <textarea id="del-reason" rows="4" maxlength="1000" placeholder="Se quiser, conte por que deseja excluir os seus dados."></textarea>
+          </div>
+          <button type="submit" id="del-submit" class="btn-primary">
+            <span class="btn-text">Enviar solicitação</span>
+            <span class="btn-loading" hidden>Enviando…</span>
+          </button>
+          <p id="del-error" class="doc-error" role="alert" hidden></p>
+          <p id="del-success" class="doc-success" role="status" hidden></p>
+        </form>
+
+        <div class="callout"><p><strong>O que acontece depois:</strong> o pedido é processado em até 15 dias úteis e você recebe a confirmação por e-mail. Dúvidas: contato@lyraarte.com</p></div>
+      </div>
+    </main>
+    <p class="doc-footer"><span>Feito para a <a href="https://comunidade.maestrosdaia.com" target="_blank" rel="noopener noreferrer">Comunidade Maestros da IA</a></span><a href="about.html">Sobre</a><a href="privacy-policy.html">Política de Privacidade</a><a href="data-deletion.html">Excluir meus dados</a></p>
+  </div>
+  <script src="config.js"></script>
+  <script src="data-deletion.js"></script>
+</body>
+</html>

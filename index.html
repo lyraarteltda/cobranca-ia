@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="gate-bootstrap.js"></script>
+  <title>Cobrança IA — Maestros da IA</title>
+  <meta name="description" content="Régua de cobrança com Pix em lote: importe a lista de clientes e receba, para cada um, a mensagem certa para o estágio do atraso, o Pix copia-e-cola com valor, o QR Code e o link que abre a conversa no WhatsApp já preenchida.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://gate.maestrosdaia.com">
+  <link rel="preload" href="https://gate.maestrosdaia.com/v1/membership-gate.js" as="script">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='5' fill='%23f6eccb'/%3E%3Cpath d='M11 4v24' stroke='%231d2433' stroke-width='1.6' stroke-dasharray='2 2.4'/%3E%3Crect x='15' y='9' width='12' height='12' fill='none' stroke='%231d2433' stroke-width='2'/%3E%3Crect x='18' y='12' width='6' height='6' fill='%23c2412d'/%3E%3C/svg%3E">
+</head>
+<body>
+
+  <!-- ═══════════ MEMBERSHIP GATE ═══════════ -->
+  <div id="gate-screen" class="screen active">
+    <div class="counter">
+      <div class="gate-grid">
+        <section class="gate-intro">
+          <p class="eyebrow">Ferramenta para membros · Comunidade Maestros da IA</p>
+          <h1 class="gradient-text">Cobrança IA</h1>
+          <p class="subtitle">A régua de cobrança do seu mês, pronta para enviar. Importe a lista de clientes e receba, para cada um, a mensagem certa para o estágio do atraso, o Pix copia-e-cola com o valor, o QR Code e a conversa do WhatsApp aberta com tudo preenchido.</p>
+          <ul class="gate-points">
+            <li><b>Pix de verdade.</b> Código copia-e-cola e QR com valor e identificador, no padrão do Banco Central, gerados aqui no navegador.</li>
+            <li><b>Régua automática.</b> Lembrete antes do vencimento, aviso no dia, e mensagens cada vez mais firmes conforme os dias de atraso.</li>
+            <li><b>Controle do mês.</b> Marque quem pagou, veja o que falta receber e repita as cobranças fixas no mês seguinte com um clique.</li>
+          </ul>
+        </section>
+
+        <aside class="carne gate-card" aria-labelledby="gate-title">
+          <div class="carne-stub" aria-hidden="true">
+            <p class="stub-k">Canhoto</p>
+            <p class="stub-v">Parcela<br><b>01/01</b></p>
+            <p class="stub-k">Venc.</p>
+            <p class="stub-v"><b>hoje</b></p>
+            <p class="stub-k">Valor</p>
+            <p class="stub-v"><b>acesso</b></p>
+          </div>
+          <div class="carne-body">
+            <div class="carne-head">
+              <p class="carne-issuer">Carnê dos Maestros<span>Parcela única de acesso</span></p>
+              <p class="carne-no">Nº <span>0001</span></p>
+            </div>
+            <h2 class="carne-title" id="gate-title">Confira seu acesso ao <em>Cobrança IA</em></h2>
+            <p class="community-badge">Exclusivo para membros da Comunidade Maestros da IA</p>
+
+            <form id="gate-form" class="gate-form" novalidate>
+              <div class="form-group">
+                <label for="gate-email">E-mail da sua compra</label>
+                <input type="email" id="gate-email" placeholder="seu@email.com" autocomplete="email">
+              </div>
+              <div class="form-group">
+                <label for="gate-phone">ou WhatsApp com DDD</label>
+                <input type="tel" id="gate-phone" placeholder="11999999999" autocomplete="tel">
+              </div>
+              <p class="form-hint">Basta um dos dois — o e-mail <em>ou</em> o WhatsApp usado na compra.</p>
+              <button type="submit" id="gate-submit" class="btn-primary btn-block">
+                <span class="btn-text">Verificar acesso</span>
+                <span class="btn-loading">Verificando...</span>
+              </button>
+              <p id="gate-error" class="error-message" role="alert"></p>
+              <p class="gate-checking"><span class="gate-checking-dot" aria-hidden="true"></span>Conferindo o seu acesso…</p>
+            </form>
+
+            <p class="gate-footer">Ainda não é membro? <a href="https://comunidade.maestrosdaia.com" target="_blank" rel="noopener noreferrer">Conheça a Comunidade Maestros da IA</a></p>
+            <p class="barcode" aria-hidden="true"></p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ API KEY SETUP ═══════════ -->
+  <div id="key-screen" class="screen">
+    <div class="counter narrow">
+      <div class="sheet key-card">
+        <p class="kicker">Antes de abrir o carnê</p>
+        <h2 class="sheet-title">Conecte sua chave de IA</h2>
+        <p class="lead-p">A ferramenta usa a <strong>sua própria chave</strong> (BYOK). Ela fica salva só neste navegador e nunca vai para os nossos servidores. A IA recebe <strong>só o primeiro nome do cliente, o valor, o vencimento e os dias de atraso</strong> para escrever cada mensagem — nunca o telefone do cliente nem a sua chave Pix.</p>
+
+        <form id="key-inputs" class="key-inputs" novalidate></form>
+
+        <div class="field">
+          <label for="key-model-select">Modelo de IA</label>
+          <select id="key-model-select"></select>
+          <p class="field-note">Com uma chave da OpenRouter você escolhe entre Claude, GPT, Gemini, DeepSeek e os modelos em alta — tudo com a mesma chave. Escrever as mensagens de um mês inteiro custa centavos.</p>
+        </div>
+
+        <div class="key-actions">
+          <button id="key-continue" class="btn-primary" disabled>Abrir o carnê</button>
+          <button id="key-skip" class="btn-secondary">Pular por enquanto</button>
+        </div>
+        <p class="field-note">Sem chave tudo funciona — Pix, QR, régua, WhatsApp e controle — com mensagens-modelo prontas. A chave só é usada para a IA escrever cada mensagem sob medida para o cliente.</p>
+
+        <details class="key-info">
+          <summary>Como consigo uma chave da OpenRouter?</summary>
+          <div class="key-info-content">
+            <p>Crie uma conta em <code>openrouter.ai</code>, abra <code>openrouter.ai/keys</code> e clique em <em>Create Key</em>.</p>
+            <p>Adicione créditos (a partir de US$ 5) e cole a chave <code>sk-or-...</code> aqui.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ MAIN APPLICATION ═══════════ -->
+  <div id="app-screen" class="screen">
+    <header class="app-header">
+      <div class="header-left">
+        <svg class="brandmark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="5" fill="#f6eccb"/><path d="M11 4v24" stroke="#1d2433" stroke-width="1.6" stroke-dasharray="2 2.4"/><rect x="15" y="9" width="12" height="12" fill="none" stroke="#1d2433" stroke-width="2"/><rect x="18" y="12" width="6" height="6" fill="#c2412d"/></svg>
+        <div class="header-titles">
+          <p class="app-title">Cobrança IA</p>
+          <span class="today-pill" id="today-pill"></span>
+        </div>
+      </div>
+      <div class="header-right">
+        <a href="about.html" class="btn-icon" title="Sobre esta ferramenta" aria-label="Sobre esta ferramenta">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </a>
+        <button id="manage-keys-btn" class="btn-icon" title="Gerenciar chave de IA" aria-label="Gerenciar chave de IA">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+        </button>
+        <button id="logout-btn" class="btn-icon" title="Sair" aria-label="Sair">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="Seções">
+      <button class="tab on" role="tab" id="tab-fila" data-tab="fila" aria-selected="true" aria-controls="pane-fila"><span class="tab-t">Cobrar hoje</span><span class="tab-badge" id="badge-fila" hidden></span></button>
+      <button class="tab" role="tab" id="tab-lista" data-tab="lista" aria-selected="false" aria-controls="pane-lista"><span class="tab-t">Cobranças</span><span class="tab-badge muted" id="badge-lista" hidden></span></button>
+      <button class="tab" role="tab" id="tab-controle" data-tab="controle" aria-selected="false" aria-controls="pane-controle"><span class="tab-t">Controle do mês</span></button>
+      <button class="tab" role="tab" id="tab-config" data-tab="config" aria-selected="false" aria-controls="pane-config"><span class="tab-t">Seu Pix e régua</span><span class="tab-dot" id="dot-config" hidden aria-label="configuração pendente"></span></button>
+    </nav>
+
+    <main class="app-main">
+
+      <!-- ── FILA DO DIA ── -->
+      <section class="pane on" id="pane-fila" role="tabpanel" aria-labelledby="tab-fila">
+        <div class="pane-head">
+          <p class="kicker" id="fila-kicker">Fila do dia</p>
+          <h2 class="pane-title">Quem cobrar hoje</h2>
+          <p class="pane-sub">Cada canhoto é uma cobrança que chegou num degrau da régua e ainda não foi enviada. Abra no WhatsApp (mensagem e Pix já vão preenchidos), envie e marque como enviada — ela sai da fila até o próximo degrau.</p>
+        </div>
+
+        <div class="notice warn" id="fila-setup" hidden>
+          <p><b>Falta cadastrar o seu Pix.</b> Sem a chave, nome e cidade do recebedor não dá para gerar o copia-e-cola nem o QR.</p>
+          <button type="button" class="btn-primary btn-sm" data-goto="config">Cadastrar meu Pix</button>
+        </div>
+
+        <div class="fila-bar" id="fila-bar" hidden>
+          <div class="fila-count" id="fila-count"></div>
+          <div class="fila-actions">
+            <div class="field inline">
+              <label for="model-select">Modelo</label>
+              <select id="model-select"></select>
+            </div>
+            <button type="button" class="btn-primary" id="ai-write">Escrever as mensagens com IA</button>
+            <button type="button" class="btn-ghost" id="ai-stop" hidden>Parar</button>
+          </div>
+          <p class="field-note" id="ai-note"></p>
+          <div class="progress" id="ai-progress" hidden><span id="ai-bar"></span></div>
+        </div>
+
+        <div id="fila"></div>
+
+        <div class="empty" id="fila-empty" hidden>
+          <p class="empty-title" id="fila-empty-title"></p>
+          <p id="fila-empty-text"></p>
+          <div class="empty-actions" id="fila-empty-actions"></div>
+        </div>
+      </section>
+
+      <!-- ── COBRANÇAS ── -->
+      <section class="pane" id="pane-lista" role="tabpanel" aria-labelledby="tab-lista">
+        <div class="pane-head">
+          <p class="kicker">Lista de cobranças</p>
+          <h2 class="pane-title">Quem te deve, quanto e até quando</h2>
+          <p class="pane-sub">Importe a planilha de clientes (.CSV ou Excel), cole linhas copiadas do Google Planilhas ou adicione uma a uma. Cada cobrança fica salva neste navegador.</p>
+        </div>
+
+        <div class="intake">
+          <div class="sheet">
+            <h3 class="sheet-h">Importar</h3>
+            <label class="dropzone" id="dropzone" for="file-input">
+              <input type="file" id="file-input" accept=".csv,.txt,.tsv,.xlsx,.xls,text/csv" class="sr-only">
+              <span class="dz-title">Solte a planilha aqui</span>
+              <span class="dz-sub">.CSV ou Excel com colunas como cliente, WhatsApp, valor, vencimento e referência</span>
+              <span class="btn-secondary btn-sm dz-btn">Escolher arquivo</span>
+            </label>
+            <details class="paste">
+              <summary>Ou colar linhas do Google Planilhas / Excel</summary>
+              <label for="paste-area" class="sr-only">Linhas coladas</label>
+              <textarea id="paste-area" rows="6" placeholder="Ana Souza	11988887777	350,00	10/11/2026	Mensalidade novembro&#10;Carlos Lima	21977776666	1200	15/11/2026	Gestão de tráfego"></textarea>
+              <p class="field-note">Uma cobrança por linha, na ordem: cliente, WhatsApp, valor, vencimento, referência (separados por tabulação ou ponto e vírgula).</p>
+              <button type="button" class="btn-secondary btn-sm" id="paste-load">Ler as linhas coladas</button>
+            </details>
+            <div class="intake-foot">
+              <button type="button" class="btn-ghost btn-sm" id="example-btn">Carregar exemplo para testar</button>
+              <button type="button" class="btn-ghost btn-sm" id="template-btn">Baixar planilha-modelo (.csv)</button>
+            </div>
+            <p class="error-message" id="import-error" role="alert" hidden></p>
+          </div>
+
+          <form class="sheet add-form" id="add-form" novalidate>
+            <h3 class="sheet-h" id="add-title">Nova cobrança</h3>
+            <div class="grid-2">
+              <div class="field"><label for="f-cliente">Cliente</label><input id="f-cliente" maxlength="80" placeholder="Nome do cliente" autocomplete="off"></div>
+              <div class="field"><label for="f-fone">WhatsApp do cliente</label><input id="f-fone" type="tel" maxlength="20" placeholder="11999999999" autocomplete="off"></div>
+              <div class="field"><label for="f-valor">Valor (R$)</label><input id="f-valor" inputmode="decimal" maxlength="14" placeholder="350,00" autocomplete="off"></div>
+              <div class="field"><label for="f-venc">Vencimento</label><input id="f-venc" type="date"></div>
+            </div>
+            <div class="field"><label for="f-ref">Referência (aparece na mensagem)</label><input id="f-ref" maxlength="80" placeholder="ex.: Mensalidade de novembro, Parcela 2/3" autocomplete="off"></div>
+            <div class="field"><label for="f-obs">Observação para a IA (opcional)</label><input id="f-obs" maxlength="160" placeholder="ex.: cliente antigo, sempre paga; prefere tom informal" autocomplete="off"></div>
+            <label class="check"><input type="checkbox" id="f-rec"> <span>Cobrança fixa — repetir todo mês</span></label>
+            <p class="error-message" id="add-error" role="alert" hidden></p>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary" id="add-submit">Adicionar cobrança</button>
+              <button type="button" class="btn-ghost" id="add-cancel" hidden>Cancelar edição</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="mapping sheet" id="mapping" hidden>
+          <h3 class="sheet-h">Confira as colunas</h3>
+          <p class="field-note" id="map-note"></p>
+          <div class="map-grid" id="map-grid"></div>
+          <div class="table-wrap"><table class="mini" id="map-preview"></table></div>
+          <div class="form-actions">
+            <button type="button" class="btn-primary" id="map-ok">Importar cobranças</button>
+            <button type="button" class="btn-ghost" id="map-cancel">Cancelar</button>
+          </div>
+        </div>
+
+        <div class="list-tools" id="list-tools" hidden>
+          <div class="chips" role="group" aria-label="Filtrar">
+            <button type="button" class="chip on" data-filter="abertas">Em aberto</button>
+            <button type="button" class="chip" data-filter="atrasadas">Atrasadas</button>
+            <button type="button" class="chip" data-filter="pagas">Pagas</button>
+            <button type="button" class="chip" data-filter="todas">Todas</button>
+          </div>
+          <div class="field inline grow"><label for="list-q">Buscar</label><input type="search" id="list-q" placeholder="nome ou referência"></div>
+        </div>
+        <div class="table-wrap" id="list-wrap" hidden>
+          <table class="ledger" id="list-table">
+            <thead><tr><th scope="col">Situação</th><th scope="col">Cliente</th><th scope="col">Referência</th><th scope="col" class="num">Vencimento</th><th scope="col" class="num">Valor</th><th scope="col"><span class="sr-only">Ações</span></th></tr></thead>
+            <tbody id="list-body"></tbody>
+          </table>
+        </div>
+        <p class="field-note" id="list-empty" hidden></p>
+      </section>
+
+      <!-- ── CONTROLE ── -->
+      <section class="pane" id="pane-controle" role="tabpanel" aria-labelledby="tab-controle">
+        <div class="pane-head">
+          <p class="kicker">Controle do mês</p>
+          <h2 class="pane-title">O que entrou e o que falta entrar</h2>
+          <p class="pane-sub">Tudo calculado aqui a partir das cobranças e de quem você marcou como pago. A ferramenta não acessa o seu banco: marque “paga” quando o Pix cair.</p>
+        </div>
+        <div class="ctl-bar">
+          <div class="field inline"><label for="month-select">Mês de vencimento</label><select id="month-select"></select></div>
+          <div class="ctl-actions">
+            <button type="button" class="btn-secondary btn-sm" id="next-month">Gerar as cobranças fixas do mês seguinte</button>
+            <button type="button" class="btn-secondary btn-sm" id="dl-xlsx">Baixar planilha (.xlsx)</button>
+            <button type="button" class="btn-ghost btn-sm" id="dl-csv">Baixar .csv</button>
+          </div>
+        </div>
+        <div id="ctl"></div>
+      </section>
+
+      <!-- ── CONFIG ── -->
+      <section class="pane" id="pane-config" role="tabpanel" aria-labelledby="tab-config">
+        <div class="pane-head">
+          <p class="kicker">Configuração</p>
+          <h2 class="pane-title">Seu Pix e a sua régua</h2>
+          <p class="pane-sub">Os dados do recebedor entram no código Pix de cada cobrança. A chave fica só neste navegador — ela nunca vai para a IA.</p>
+        </div>
+        <div class="config-grid">
+          <form class="sheet" id="pix-form" novalidate>
+            <h3 class="sheet-h">Recebedor do Pix</h3>
+            <div class="field">
+              <span class="label" id="lbl-tipo">Tipo de chave</span>
+              <div class="seg" role="radiogroup" aria-labelledby="lbl-tipo">
+                <label><input type="radio" name="tipo" value="cpf"><span>CPF</span></label>
+                <label><input type="radio" name="tipo" value="cnpj"><span>CNPJ</span></label>
+                <label><input type="radio" name="tipo" value="fone"><span>Celular</span></label>
+                <label><input type="radio" name="tipo" value="email"><span>E-mail</span></label>
+                <label><input type="radio" name="tipo" value="evp"><span>Aleatória</span></label>
+              </div>
+            </div>
+            <div class="field"><label for="c-chave">Chave Pix</label><input id="c-chave" maxlength="77" autocomplete="off" spellcheck="false" placeholder="Digite a chave cadastrada no seu banco"><p class="field-note" id="chave-note"></p></div>
+            <div class="grid-2">
+              <div class="field"><label for="c-nome">Nome do recebedor</label><input id="c-nome" maxlength="25" autocomplete="off" placeholder="Como está no banco"><p class="field-note">Até 25 letras, sem acento (o padrão Pix exige).</p></div>
+              <div class="field"><label for="c-cidade">Cidade</label><input id="c-cidade" maxlength="15" autocomplete="off" placeholder="SAO PAULO"><p class="field-note">Até 15 letras, sem acento.</p></div>
+            </div>
+            <div class="pix-test" id="pix-test" hidden>
+              <p class="label">Pix de teste (R$ 1,00)</p>
+              <div class="pix-test-row"><canvas id="pix-test-qr" width="132" height="132" aria-label="QR Code de teste"></canvas><div><p class="field-note">Antes de cobrar, pague este Pix de R$ 1,00 pelo app do seu banco (de outra conta) e confira se o nome que aparece é o seu.</p><code class="pix-code" id="pix-test-code"></code><button type="button" class="btn-secondary btn-sm" id="pix-test-copy">Copiar código</button></div></div>
+            </div>
+          </form>
+
+          <form class="sheet" id="msg-form" novalidate>
+            <h3 class="sheet-h">Como as mensagens falam</h3>
+            <div class="field"><label for="c-assina">Assinatura</label><input id="c-assina" maxlength="60" placeholder="ex.: Marina · Studio Marina Design"></div>
+            <div class="field"><label for="c-negocio">O que você vende (contexto para a IA)</label><input id="c-negocio" maxlength="160" placeholder="ex.: gestão de redes sociais para clínicas"></div>
+            <div class="field">
+              <span class="label" id="lbl-tom">Tom</span>
+              <div class="seg" role="radiogroup" aria-labelledby="lbl-tom">
+                <label><input type="radio" name="tom" value="proximo"><span>Próximo</span></label>
+                <label><input type="radio" name="tom" value="cordial"><span>Cordial</span></label>
+                <label><input type="radio" name="tom" value="formal"><span>Formal</span></label>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="field"><label for="c-multa">Multa por atraso (%)</label><input id="c-multa" inputmode="decimal" maxlength="5" placeholder="0"><p class="field-note">Opcional. Ex.: 2</p></div>
+              <div class="field"><label for="c-juros">Juros ao mês (%)</label><input id="c-juros" inputmode="decimal" maxlength="5" placeholder="0"><p class="field-note">Opcional, pró-rata por dia. Ex.: 1</p></div>
+            </div>
+            <p class="field-note">Com multa ou juros, o Pix de quem está atrasado já sai com o valor atualizado — e a mensagem mostra a conta.</p>
+          </form>
+
+          <div class="sheet regua-sheet">
+            <h3 class="sheet-h">A régua</h3>
+            <p class="field-note">Cada degrau é um dia em relação ao vencimento (negativo = antes). Quando a cobrança chega num degrau, ela entra na fila de “Cobrar hoje”.</p>
+            <ol class="regua" id="regua"></ol>
+            <div class="form-actions">
+              <button type="button" class="btn-secondary btn-sm" id="regua-add">Adicionar degrau</button>
+              <button type="button" class="btn-ghost btn-sm" id="regua-reset">Voltar para a régua padrão</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>Cobrança IA · <a href="https://comunidade.maestrosdaia.com" target="_blank" rel="noopener noreferrer">Comunidade Maestros da IA</a> · a ferramenta não acessa o seu banco nem envia mensagens sozinha</p>
+      <p class="footer-links"><a href="about.html">Sobre</a><a href="privacy-policy.html">Política de Privacidade</a><a href="data-deletion.html">Excluir meus dados</a><button type="button" class="link-btn" id="wipe-local">Apagar dados deste navegador</button></p>
+    </footer>
+  </div>
+
+  <!-- Gerenciar chave -->
+  <div id="key-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="key-modal-title">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="key-modal-title">Chave de IA</h3>
+        <button id="modal-close" class="btn-icon" type="button" aria-label="Fechar">×</button>
+      </div>
+      <form id="modal-key-inputs" class="key-inputs" novalidate></form>
+      <div class="field">
+        <label for="model-select-modal">Modelo de IA</label>
+        <select id="model-select-modal"></select>
+      </div>
+      <div class="modal-actions">
+        <button id="modal-clear" class="btn-ghost" type="button">Apagar chave</button>
+        <button id="modal-save" class="btn-primary" type="button">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="kill-switch.js"></script>
+  <script src="rate-limiter.js"></script>
+  <script src="https://gate.maestrosdaia.com/v1/membership-gate.js"></script>
+  <script src="api-key-manager.js"></script>
+  <script src="feedback-widget.js"></script>
+  <script src="vendor/qrcode.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
