@@ -920,13 +920,13 @@ const App = (function () {
         '<div class="slip-grid">' +
           '<div class="msg-col"><div class="msg-top"><label class="label" for="msg-' + esc(it.id) + '">Mensagem</label><span class="src src-' + msg.src + '">' + esc(SRC_LABEL[msg.src]) + '</span></div>' +
           '<textarea class="msg" id="msg-' + esc(it.id) + '" data-msg="' + esc(it.id) + '" rows="7" maxlength="1500">' + esc(msg.texto) + '</textarea>' +
-          '<p class="msg-hint">O Pix copia-e-cola vai logo abaixo desta mensagem, no mesmo envio.</p></div>' +
+          '<p class="msg-hint">' + (code ? 'O Pix copia-e-cola vai logo abaixo desta mensagem, no mesmo envio.' : 'Sem Pix cadastrado não há código para anexar — por isso o envio fica bloqueado.') + '</p></div>' +
           '<div class="pix-col">' + (code ? '<canvas class="qr" width="168" height="168" data-qr="' + esc(it.id) + '" role="img" aria-label="QR Code Pix de ' + esc(brl(a.total)) + '"></canvas><p class="label">Pix copia e cola · ' + esc(brl(a.total)) + '</p><code class="pix-code">' + esc(code) + '</code>' : '<p class="pix-missing">Cadastre o seu Pix para gerar o QR e o copia-e-cola.</p><button type="button" class="btn-secondary btn-sm" data-goto="config">Cadastrar Pix</button>') + '</div>' +
         '</div>' +
         '<div class="slip-actions">' +
-          (wa ? '<a class="btn-primary btn-wa" href="' + esc(wa) + '" target="_blank" rel="noopener noreferrer" data-wa="' + esc(it.id) + '">Abrir no WhatsApp</a>' : '<span class="btn-primary is-off" aria-disabled="true" title="Sem WhatsApp válido">Sem WhatsApp válido</span>') +
-          '<button type="button" class="btn-secondary" data-sent="' + esc(it.id) + '">Marcar como enviada</button>' +
-          '<button type="button" class="btn-ghost btn-sm" data-copy="' + esc(it.id) + '">Copiar mensagem + Pix</button>' +
+          (!code ? '<span class="btn-primary is-off" aria-disabled="true">Cadastre o Pix para enviar</span>' : wa ? '<a class="btn-primary btn-wa" href="' + esc(wa) + '" target="_blank" rel="noopener noreferrer" data-wa="' + esc(it.id) + '">Abrir no WhatsApp</a>' : '<span class="btn-primary is-off" aria-disabled="true">Sem WhatsApp válido</span>') +
+          '<button type="button" class="btn-secondary" data-sent="' + esc(it.id) + '"' + (code ? '' : ' disabled') + '>Marcar como enviada</button>' +
+          (code ? '<button type="button" class="btn-ghost btn-sm" data-copy="' + esc(it.id) + '">Copiar mensagem + Pix</button>' : '') +
           (code ? '<button type="button" class="btn-ghost btn-sm" data-card="' + esc(it.id) + '">Baixar cartão (PNG)</button>' : '') +
           '<button type="button" class="btn-ghost btn-sm" data-ai1="' + esc(it.id) + '">Reescrever com IA</button>' +
           '<button type="button" class="btn-ghost btn-sm" data-pay="' + esc(it.id) + '">Já pagou</button>' +
